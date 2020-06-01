@@ -5,6 +5,18 @@ import (
 	"io/ioutil"
 )
 
+func returnString(filePath string) string {
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
+}
+
+const (
+	api_url = "https://kubernetes.default.svc"
+)
+
 func main() {
 	// url := "https://kubernetes.default.svc/"
 
@@ -27,9 +39,9 @@ func main() {
 	// body, _ := ioutil.ReadAll(resp.Body)
 	// log.Println(string([]byte(body)))
 
-	dat, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/token")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Print(string(dat))
+	token := returnString("/var/run/secrets/kubernetes.io/serviceaccount/token")
+	ca := returnString("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt")
+	fmt.Print(token)
+	fmt.Print(ca)
+	fmt.Print(api_url)
 }
