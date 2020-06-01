@@ -41,7 +41,5 @@ func main() {
 
 	token := returnString("/var/run/secrets/kubernetes.io/serviceaccount/token")
 	ca := returnString("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt")
-	fmt.Print(token)
-	fmt.Print(ca)
-	fmt.Print(api_url)
+	fmt.Print(token, ca, api_url)
 }
