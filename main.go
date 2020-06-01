@@ -1,45 +1,54 @@
 package main
 
 import (
-	"fmt"
+	"crypto/tls"
+	"crypto/x509"
 	"io/ioutil"
+	"log"
+	"net/http"
 )
 
-func returnString(filePath string) string {
+func returnDataFile(filePath string) []byte {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		panic(err)
 	}
-	return string(data)
+	return data
 }
 
 const (
-	api_url = "https://kubernetes.default.svc"
+	apiURL = "https://kubernetes.default.svc/apis/metrics.k8s.io"
+	token  = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+	caCert = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 )
 
 func main() {
-	// url := "https://kubernetes.default.svc/"
 
-	// // Create a Bearer string by appending string access token
-	// var bearer = "Bearer " + <ACCESS TOKEN HERE>
+	// Create a Bearer string by appending string access token
+	var bearer = "Bearer " + string(returnDataFile(token))
 
-	// // Create a new request using http
-	// req, err := http.NewRequest("GET", url, nil)
+	// Create a new request using http
+	req, err := http.NewRequest("GET", apiURL, nil)
 
-	// // add authorization header to the req
-	// req.Header.Add("Authorization", bearer)
+	// add authorization header to the req
+	req.Header.Add("Authorization", bearer)
 
-	// // Send req using http Client
-	// client := &http.Client{}
-	// resp, err := client.Do(req)
-	// if err != nil {
-	//     log.Println("Error on response.\n[ERRO] -", err)
-	// }
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(returnDataFile(caCert))
 
-	// body, _ := ioutil.ReadAll(resp.Body)
-	// log.Println(string([]byte(body)))
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs: caCertPool,
+			},
+		},
+	}
 
-	token := returnString("/var/run/secrets/kubernetes.io/serviceaccount/token")
-	ca := returnString("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt")
-	fmt.Print(token, ca, api_url)
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERRO] -", err)
+	}
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	log.Println(string([]byte(body)))
 }
