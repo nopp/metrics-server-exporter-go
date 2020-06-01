@@ -12,4 +12,4 @@ LABEL maintainer="Carlos Augusto Malucelli <camalucelli@gmail.com>"
 
 ENV msg_version 1.0
 COPY --from=builder /go/metrics-server-exporter-go-${msg_version}/main .
-ENTRYPOINT ["./run.sh"]
+ENTRYPOINT ["./main"]

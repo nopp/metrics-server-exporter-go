@@ -5,12 +5,6 @@ import (
 	"io/ioutil"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func main() {
 	// url := "https://kubernetes.default.svc/"
 
@@ -34,6 +28,8 @@ func main() {
 	// log.Println(string([]byte(body)))
 
 	dat, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/token")
-	check(err)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Print(string(dat))
 }
