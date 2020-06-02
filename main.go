@@ -17,7 +17,7 @@ func returnDataFile(filePath string) []byte {
 }
 
 const (
-	apiURL = "https://kubernetes.default.svc/apis/metrics.k8s.io"
+	apiURL = "https://kubernetes.default.svc/apis/metrics.k8s.io/v1beta1/pods"
 	token  = "/var/run/secrets/kubernetes.io/serviceaccount/token"
 	caCert = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 )
