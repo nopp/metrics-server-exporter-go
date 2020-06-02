@@ -15,7 +15,7 @@ func main() {
 
 	apiGo := common.ConnectToAPI()
 
-	var pods pod.Pod
+	var pods pod.Info
 	_ = json.NewDecoder(apiGo.Body).Decode(&pods)
 
 	log.Println(pods)

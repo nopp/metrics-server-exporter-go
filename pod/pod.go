@@ -2,7 +2,7 @@ package pod
 
 import "time"
 
-type Pod struct {
+type Info struct {
 	Items []struct {
 		Metadata struct {
 			Name              string    `json:"name"`

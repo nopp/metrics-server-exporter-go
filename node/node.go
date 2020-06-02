@@ -2,7 +2,7 @@ package node
 
 import "time"
 
-type Node struct {
+type Info struct {
 	Items []struct {
 		Metadata struct {
 			Name              string    `json:"name"`
