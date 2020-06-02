@@ -6,57 +6,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"metrics-server-exporter-go/common"
+	"metrics-server-exporter-go/node"
+	"metrics-server-exporter-go/pod"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
-
-type Pod struct {
-	Items []struct {
-		Metadata struct {
-			Name              string    `json:"name"`
-			Namespace         string    `json:"namespace"`
-			CreationTimestamp time.Time `json:"creationTimestamp"`
-		} `json:"metadata"`
-		Containers []struct {
-			Name  string `json:"name"`
-			Usage struct {
-				CPU    string `json:"cpu"`
-				Memory string `json:"memory"`
-			} `json:"usage"`
-		} `json:"containers"`
-	} `json:"items"`
-}
-
-type Node struct {
-	Items []struct {
-		Metadata struct {
-			Name              string    `json:"name"`
-			CreationTimestamp time.Time `json:"creationTimestamp"`
-		} `json:"metadata"`
-		Usage struct {
-			CPU    string `json:"cpu"`
-			Memory string `json:"memory"`
-		} `json:"usage"`
-	} `json:"items"`
-}
-
-// func returnDataFile(filePath string) []byte {
-// 	data, err := ioutil.ReadFile(filePath)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return data
-// }
-
-// const (
-// 	apiURL = "https://kubernetes.default.svc/apis/metrics.k8s.io/v1beta1/namespaces/kube-system/pods"
-// 	// apiURL = "https://kubernetes.default.svc/apis/metrics.k8s.io/v1beta1/nodes"
-// 	token  = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-// 	caCert = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-// )
 
 func main() {
 
@@ -88,12 +44,13 @@ func main() {
 	// body, _ := ioutil.ReadAll(resp.Body)
 	// log.Println(string([]byte(body)))
 
-	// var nodes Node
-	var pods Pod
-	// _ = json.NewDecoder(resp.Body).Decode(&nodes)
+	var nodes node.Node
+	var pods pod.Pod
+	_ = json.NewDecoder(resp.Body).Decode(&nodes)
 	_ = json.NewDecoder(resp.Body).Decode(&pods)
 
 	log.Println(pods.Items[0].Metadata.Name, pods.Items[0].Containers[0].Name, pods.Items[0].Containers[0].Usage.CPU, pods.Items[0].Containers[0].Usage.Memory)
+	log.Println(nodes.Items[0].Metadata.Name, nodes.Items[0].Usage.CPU, nodes.Items[0].Usage.Memory)
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":8484", nil)

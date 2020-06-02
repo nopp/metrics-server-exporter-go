@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: metrics-server-exporter
+  name: metrics-server-exporter-go
   labels:
-    k8s-app: metrics-server-exporter
+    k8s-app: metrics-server-exporter-go
 spec:
   replicas: 1
   selector:
     matchLabels:
-      k8s-app: metrics-server-exporter
+      k8s-app: metrics-server-exporter-go
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -17,11 +17,11 @@ spec:
   template:
     metadata:
       labels:
-        k8s-app: metrics-server-exporter
+        k8s-app: metrics-server-exporter-go
     spec:
-      serviceAccountName: metrics-server-exporter
+      serviceAccountName: metrics-server-exporter-go
       containers:
-      - name: metrics-server-exporter
+      - name: metrics-server-exporter-go
         image: regsitry.carlosmalucelli.com/metrics-server-exporter-go:1.1
         imagePullPolicy: Always
         ports:

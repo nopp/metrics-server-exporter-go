@@ -2,9 +2,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: metrics-server-exporter
+  name: metrics-server-exporter-go
   labels:
-    k8s-app: metrics-server-exporter
+    k8s-app: metrics-server-exporter-go
 rules:
 - apiGroups:
     - metrics.k8s.io
@@ -19,19 +19,19 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: metrics-server-exporter
+  name: metrics-server-exporter-go
   labels:
-    k8s-app: metrics-server-exporter
+    k8s-app: metrics-server-exporter-go
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: metrics-server-exporter
+  name: metrics-server-exporter-go
 subjects:
 - kind: ServiceAccount
   namespace: default
-  name: metrics-server-exporter
+  name: metrics-server-exporter-go
 roleRef:
   kind: ClusterRole
-  name: metrics-server-exporter
+  name: metrics-server-exporter-go
   apiGroup: rbac.authorization.k8s.io
