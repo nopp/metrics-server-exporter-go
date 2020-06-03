@@ -33,5 +33,4 @@ func main() {
 	}()
 
 	log.Fatal(http.ListenAndServe(config.Host+":"+config.Port, nil))
-
 }

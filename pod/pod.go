@@ -2,6 +2,7 @@ package pod
 
 import (
 	"encoding/json"
+	"log"
 	"metrics-server-exporter-go/api"
 	"regexp"
 	"strconv"
@@ -51,6 +52,7 @@ var (
 func Collect() {
 
 	var pods Info
+	log.Println("Starting collect POD data,")
 
 	re := regexp.MustCompile("[^0-9]")
 
@@ -61,7 +63,6 @@ func Collect() {
 	for i := range pods.Items {
 
 		podName := pods.Items[i].Metadata.Name
-		podNamespace := pods.Items[i].Metadata.Namespace
 
 		for j := range pods.Items[i].Containers {
 
@@ -78,4 +79,5 @@ func Collect() {
 		}
 
 	}
+	log.Println("POD data collected.")
 }

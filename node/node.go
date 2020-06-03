@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"log"
 	"metrics-server-exporter-go/api"
 	"regexp"
 	"strconv"
@@ -46,6 +47,7 @@ var (
 // Collect responsible for get CPU and Memory data
 func Collect() {
 
+	log.Println("Starting collect NODE data.")
 	var nodes Info
 
 	re := regexp.MustCompile("[^0-9]")
@@ -67,4 +69,5 @@ func Collect() {
 		MetricsNodesCPU.WithLabelValues(nodes.Items[i].Metadata.Name).Add(CPUfloat)
 		MetricsNodesMEM.WithLabelValues(nodes.Items[i].Metadata.Name).Add(MEMfloat)
 	}
+	log.Println("NODE data collected.")
 }
