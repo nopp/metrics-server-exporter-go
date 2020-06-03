@@ -5,9 +5,10 @@ ENV msg_version 1.0
 #WORKDIR metrics-server-exporter-go-${msg_version}
 ADD main.go .
 ADD go.mod .
-ADD common/common.go ./common/common.go
 ADD pod/pod.go ./pod/pod.go
 ADD node/node.go ./node/node.go
+ADD config/config.go ./config/config.go
+ADD api/api.go ./api/api.go
 RUN unset GOPATH \
     && CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
 
