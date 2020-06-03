@@ -2,7 +2,7 @@
 
 Based on https://github.com/grupozap/metrics-server-exporter (Python Version)
 
-metrics-server-exporter provides cpu and memory metrics for nodes and pods, directly querying the metrics-server API `/apis/metrics.k8s.io/v1beta1/{pods, nodes}`
+metrics-server-exporter-go provides cpu and memory metrics for nodes and pods, directly querying the metrics-server API `/apis/metrics.k8s.io/v1beta1/{pods, nodes}`
 
 ### Node metrics
 
