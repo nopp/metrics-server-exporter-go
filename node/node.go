@@ -10,6 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+// Info - Data structure of node
 type Info struct {
 	Items []struct {
 		Metadata struct {
@@ -24,6 +25,7 @@ type Info struct {
 }
 
 var (
+	// MetricsNodesCPU - CPU Gauge
 	MetricsNodesCPU = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "kube_metrics_server_nodes_cpu",
@@ -31,6 +33,7 @@ var (
 		},
 		[]string{"instance"},
 	)
+	// MetricsNodesMEM - Memory Gauge
 	MetricsNodesMEM = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "kube_metrics_server_nodes_mem",
@@ -40,28 +43,25 @@ var (
 	)
 )
 
+// Collect responsible for get CPU and Memory data
 func Collect() {
+
+	var nodes Info
 
 	re := regexp.MustCompile("[^0-9]")
 
-	// NODE
 	apiNode := api.Connect("node")
 
-	var nodes Info
 	_ = json.NewDecoder(apiNode.Body).Decode(&nodes)
 
 	for i := range nodes.Items {
 
-		// Only numbers :D
+		// Only numbers/String to float
 		nodes.Items[i].Usage.CPU = re.ReplaceAllLiteralString(nodes.Items[i].Usage.CPU, "")
-
-		// String to float
 		CPUfloat, _ := strconv.ParseFloat(nodes.Items[i].Usage.CPU, 64)
 
-		// Only numbers :D
+		// Only numbers/String to float
 		nodes.Items[i].Usage.Memory = re.ReplaceAllLiteralString(nodes.Items[i].Usage.Memory, "")
-
-		// String to float
 		MEMfloat, _ := strconv.ParseFloat(nodes.Items[i].Usage.Memory, 64)
 
 		MetricsNodesCPU.WithLabelValues(nodes.Items[i].Metadata.Name).Add(CPUfloat)

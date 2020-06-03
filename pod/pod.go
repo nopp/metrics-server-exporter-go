@@ -2,8 +2,6 @@ package pod
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"metrics-server-exporter-go/api"
 	"regexp"
 	"strconv"
@@ -12,6 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+// Info - Data structure of pod
 type Info struct {
 	Items []struct {
 		Metadata struct {
@@ -30,6 +29,7 @@ type Info struct {
 }
 
 var (
+	// MetricsPodsCPU - CPU Gauge
 	MetricsPodsCPU = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "kube_metrics_server_pods_cpu",
@@ -37,6 +37,7 @@ var (
 		},
 		[]string{"pod", "container"},
 	)
+	// MetricsPodsMEM - Memory Gauge
 	MetricsPodsMEM = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "kube_metrics_server_pods_mem",
@@ -46,13 +47,15 @@ var (
 	)
 )
 
+// Collect responsible for get CPU and Memory data
 func Collect() {
+
+	var pods Info
 
 	re := regexp.MustCompile("[^0-9]")
 
 	apiPod := api.Connect("pod")
 
-	var pods Info
 	_ = json.NewDecoder(apiPod.Body).Decode(&pods)
 
 	for i := range pods.Items {
@@ -60,15 +63,16 @@ func Collect() {
 		podName := pods.Items[i].Metadata.Name
 		podNamespace := pods.Items[i].Metadata.Namespace
 
-		fmt.Println(podName, podNamespace)
-		fmt.Println(pods.Items[i].Containers)
-
 		for j := range pods.Items[i].Containers {
+
+			// Only numbers/String to float
 			pods.Items[i].Containers[j].Usage.CPU = re.ReplaceAllLiteralString(pods.Items[i].Containers[j].Usage.CPU, "")
 			CPUfloat, _ := strconv.ParseFloat(pods.Items[i].Containers[j].Usage.CPU, 64)
-			log.Println(podName, pods.Items[i].Containers[j].Name, CPUfloat)
+
+			// Only numbers/String to float
 			pods.Items[i].Containers[j].Usage.Memory = re.ReplaceAllLiteralString(pods.Items[i].Containers[j].Usage.Memory, "")
 			MEMfloat, _ := strconv.ParseFloat(pods.Items[i].Containers[j].Usage.Memory, 64)
+
 			MetricsPodsCPU.WithLabelValues(podName, pods.Items[i].Containers[j].Name).Add(CPUfloat)
 			MetricsPodsMEM.WithLabelValues(podName, pods.Items[i].Containers[j].Name).Add(MEMfloat)
 		}
