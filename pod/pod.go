@@ -74,8 +74,8 @@ func Collect() {
 			pods.Items[i].Containers[j].Usage.Memory = re.ReplaceAllLiteralString(pods.Items[i].Containers[j].Usage.Memory, "")
 			MEMfloat, _ := strconv.ParseFloat(pods.Items[i].Containers[j].Usage.Memory, 64)
 
-			MetricsPodsCPU.WithLabelValues(podName, pods.Items[i].Containers[j].Name).Add(CPUfloat)
-			MetricsPodsMEM.WithLabelValues(podName, pods.Items[i].Containers[j].Name).Add(MEMfloat)
+			MetricsPodsCPU.With(prometheus.Labels{"pod": podName, "container": pods.Items[i].Containers[j].Name}).Add(CPUfloat)
+			MetricsPodsMEM.With(prometheus.Labels{"pod": podName, "container": pods.Items[i].Containers[j].Name}).Add(MEMfloat)
 		}
 
 	}
