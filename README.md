@@ -1,6 +1,7 @@
 # metrics-server-exporter-go (Go Version)
 
 ![Go](https://github.com/nopp/metrics-server-exporter-go/workflows/Go/badge.svg)
+![Docker](https://github.com/nopp/metrics-server-exporter-go/workflows/Docker/badge.svg)
 
 Based on https://github.com/grupozap/metrics-server-exporter (Python Version)
 
