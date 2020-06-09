@@ -1,5 +1,7 @@
 # metrics-server-exporter-go (Go Version)
 
+![Go](https://github.com/nopp/metrics-server-exporter-go/workflows/Go/badge.svg)
+
 Based on https://github.com/grupozap/metrics-server-exporter (Python Version)
 
 metrics-server-exporter-go provides cpu and memory metrics for nodes and pods, directly querying the metrics-server API `/apis/metrics.k8s.io/v1beta1/{pods, nodes}`
