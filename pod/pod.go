@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"metrics-server-exporter-go/api"
-	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -36,7 +34,7 @@ var (
 			Name: "kube_metrics_server_pods_cpu",
 			Help: "Metrics Server Pods CPU",
 		},
-		[]string{"pod", "container"},
+		[]string{"pod_name", "pod_namespace", "pod_container_name"},
 	)
 	// MetricsPodsMEM - Memory Gauge
 	MetricsPodsMEM = prometheus.NewGaugeVec(
@@ -44,7 +42,7 @@ var (
 			Name: "kube_metrics_server_pods_mem",
 			Help: "Metrics Server Pods Memory",
 		},
-		[]string{"pod", "container"},
+		[]string{"pod_name", "pod_namespace", "pod_container_name"},
 	)
 )
 
@@ -54,8 +52,6 @@ func Collect() {
 	var pods Info
 	log.Println("Starting collect POD data,")
 
-	re := regexp.MustCompile("[^0-9]")
-
 	apiPod := api.Connect("pod")
 
 	_ = json.NewDecoder(apiPod.Body).Decode(&pods)
@@ -63,19 +59,12 @@ func Collect() {
 	for i := range pods.Items {
 
 		podName := pods.Items[i].Metadata.Name
+		podNamespace := pods.Items[i].Metadata.Namespace
 
 		for j := range pods.Items[i].Containers {
 
-			// Only numbers/String to float
-			pods.Items[i].Containers[j].Usage.CPU = re.ReplaceAllLiteralString(pods.Items[i].Containers[j].Usage.CPU, "")
-			CPUfloat, _ := strconv.ParseFloat(pods.Items[i].Containers[j].Usage.CPU, 64)
-
-			// Only numbers/String to float
-			pods.Items[i].Containers[j].Usage.Memory = re.ReplaceAllLiteralString(pods.Items[i].Containers[j].Usage.Memory, "")
-			MEMfloat, _ := strconv.ParseFloat(pods.Items[i].Containers[j].Usage.Memory, 64)
-
-			MetricsPodsCPU.With(prometheus.Labels{"pod": podName, "container": pods.Items[i].Containers[j].Name}).Add(CPUfloat)
-			MetricsPodsMEM.With(prometheus.Labels{"pod": podName, "container": pods.Items[i].Containers[j].Name}).Add(MEMfloat)
+			MetricsPodsCPU.With(prometheus.Labels{"pod_name": podName, "pod_namespace": podNamespace, "pod_container_name": pods.Items[i].Containers[j].Name}).Add(api.ReturnFloat(pods.Items[i].Containers[j].Usage.CPU))
+			MetricsPodsMEM.With(prometheus.Labels{"pod_name": podName, "pod_namespace": podNamespace, "pod_container_name": pods.Items[i].Containers[j].Name}).Add(api.ReturnFloat(pods.Items[i].Containers[j].Usage.Memory))
 		}
 
 	}

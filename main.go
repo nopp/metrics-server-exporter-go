@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	"metrics-server-exporter-go/config"
 	"metrics-server-exporter-go/node"
 	"metrics-server-exporter-go/pod"
@@ -14,8 +13,6 @@ import (
 )
 
 func main() {
-
-	rand.Seed(time.Now().Unix())
 
 	http.Handle("/metrics", promhttp.Handler())
 

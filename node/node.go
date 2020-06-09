@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"metrics-server-exporter-go/api"
-	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -50,24 +48,14 @@ func Collect() {
 	log.Println("Starting collect NODE data.")
 	var nodes Info
 
-	re := regexp.MustCompile("[^0-9]")
-
 	apiNode := api.Connect("node")
 
 	_ = json.NewDecoder(apiNode.Body).Decode(&nodes)
 
 	for i := range nodes.Items {
 
-		// Only numbers/String to float
-		nodes.Items[i].Usage.CPU = re.ReplaceAllLiteralString(nodes.Items[i].Usage.CPU, "")
-		CPUfloat, _ := strconv.ParseFloat(nodes.Items[i].Usage.CPU, 64)
-
-		// Only numbers/String to float
-		nodes.Items[i].Usage.Memory = re.ReplaceAllLiteralString(nodes.Items[i].Usage.Memory, "")
-		MEMfloat, _ := strconv.ParseFloat(nodes.Items[i].Usage.Memory, 64)
-
-		MetricsNodesCPU.WithLabelValues(nodes.Items[i].Metadata.Name).Add(CPUfloat)
-		MetricsNodesMEM.WithLabelValues(nodes.Items[i].Metadata.Name).Add(MEMfloat)
+		MetricsNodesCPU.WithLabelValues(nodes.Items[i].Metadata.Name).Add(api.ReturnFloat(nodes.Items[i].Usage.CPU))
+		MetricsNodesMEM.WithLabelValues(nodes.Items[i].Metadata.Name).Add(api.ReturnFloat(nodes.Items[i].Usage.Memory))
 	}
 	log.Println("NODE data collected.")
 }

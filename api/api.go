@@ -4,8 +4,11 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
+	"log"
 	"metrics-server-exporter-go/config"
 	"net/http"
+	"regexp"
+	"strconv"
 )
 
 // Connect - Responsible to connect to node/pod API
@@ -39,7 +42,7 @@ func Connect(option string) *http.Response {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		panic("Can't connect to api.")
+		panic(err)
 	}
 	return resp
 }
@@ -51,4 +54,18 @@ func returnDataFile(filePath string) []byte {
 		panic(err)
 	}
 	return data
+}
+
+// ReturnFloat - Remove non number caracter and parse to float64
+func ReturnFloat(s string) float64 {
+
+	re := regexp.MustCompile("[^0-9]")
+
+	s = re.ReplaceAllLiteralString(s, "")
+	numFloat, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return numFloat
 }
