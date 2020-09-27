@@ -22,7 +22,7 @@ spec:
       serviceAccountName: metrics-server-exporter-go
       containers:
       - name: metrics-server-exporter-go
-        image: regsitry.carlosmalucelli.com/metrics-server-exporter-go:XXVERSIONXX
+        image: registry.carlosmalucelli.com/metrics-server-exporter-go:XXVERSIONXX
         imagePullPolicy: Always
         ports:
         - containerPort: 8484
