@@ -59,6 +59,8 @@ func returnDataFile(filePath string) []byte {
 // ReturnFloat - Remove non number caracter and parse to float64
 func ReturnFloat(s string) float64 {
 
+	log.Println(s)
+
 	re := regexp.MustCompile("[^0-9]")
 
 	s = re.ReplaceAllLiteralString(s, "")
